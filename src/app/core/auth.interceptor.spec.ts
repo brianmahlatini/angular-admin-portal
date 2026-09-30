@@ -13,7 +13,13 @@ describe('authInterceptor', () => {
   let auth: AuthService;
 
   beforeEach(async () => {
-    sessionStorage.setItem('admin-portal.session', JSON.stringify({ token: 'tok', user: { id: 1, email: 'a@x.test', name: 'A', role: 'admin' } }));
+    sessionStorage.setItem(
+      'admin-portal.session',
+      JSON.stringify({
+        token: 'tok',
+        user: { id: 1, email: 'a@x.test', name: 'A', role: 'admin' },
+      }),
+    );
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
@@ -51,7 +57,9 @@ describe('authInterceptor', () => {
   it('signs out on 401 and redirects to login', async () => {
     const navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true);
     const p = firstValueFrom(http.get('http://api.test/api/admin/users')).catch((e: unknown) => e);
-    ctrl.expectOne('http://api.test/api/admin/users').flush({ title: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
+    ctrl
+      .expectOne('http://api.test/api/admin/users')
+      .flush({ title: 'Unauthorized' }, { status: 401, statusText: 'Unauthorized' });
     await p;
     expect(auth.user()).toBeNull();
     expect(navigate).toHaveBeenCalledWith(['/login']);

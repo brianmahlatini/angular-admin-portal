@@ -22,7 +22,10 @@ jobs:
       - run: npm audit --omit=dev --audit-level=high
       - name: Point the production build at the API
         if: vars.API_URL != ''
-        run: echo "export const environment = { apiUrl: '${{ vars.API_URL }}' };" > src/environments/environment.production.ts
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: |
+          printf "export const environment = { apiUrl: '%s' };\n" "$API_URL" > src/environments/environment.production.ts
       - run: npx ng build --configuration production
       - uses: actions/upload-artifact@v4
         with:

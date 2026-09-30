@@ -24,8 +24,15 @@ export interface PageMeta {
 export function describeError(err: unknown): { message: string; fields: Record<string, string[]> } {
   if (err instanceof HttpErrorResponse) {
     if (err.status === 0) return { message: 'Could not reach the server.', fields: {} };
-    const p = (err.error ?? {}) as { title?: string; detail?: string; errors?: Record<string, string[]> };
-    return { message: p.detail || p.title || `Request failed (${err.status})`, fields: p.errors ?? {} };
+    const p = (err.error ?? {}) as {
+      title?: string;
+      detail?: string;
+      errors?: Record<string, string[]>;
+    };
+    return {
+      message: p.detail || p.title || `Request failed (${err.status})`,
+      fields: p.errors ?? {},
+    };
   }
   return { message: 'Something went wrong.', fields: {} };
 }

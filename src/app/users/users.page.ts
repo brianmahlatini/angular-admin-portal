@@ -17,8 +17,20 @@ import { UsersService } from './users.service';
       <p aria-busy="true">Loading…</p>
     } @else {
       <table>
-        <caption>{{ meta()?.total ?? 0 }} users</caption>
-        <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Joined</th><th scope="col">Role</th></tr></thead>
+        <caption>
+          {{
+            meta()?.total ?? 0
+          }}
+          users
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col">Joined</th>
+            <th scope="col">Role</th>
+          </tr>
+        </thead>
         <tbody>
           @for (u of users(); track u.id) {
             <tr>
@@ -26,23 +38,33 @@ import { UsersService } from './users.service';
               <td>{{ u.email }}</td>
               <td>{{ u.created_at | date: 'mediumDate' }}</td>
               <td>
-                <select [attr.aria-label]="'Role for ' + u.email" [value]="u.role" [disabled]="saving() === u.id"
-                        (change)="changeRole(u, $any($event.target).value)">
+                <select
+                  [attr.aria-label]="'Role for ' + u.email"
+                  [value]="u.role"
+                  [disabled]="saving() === u.id"
+                  (change)="changeRole(u, $any($event.target).value)"
+                >
                   <option value="member">member</option>
                   <option value="admin">admin</option>
                 </select>
-                @if (u.id === me()?.id) { <span class="you">(you)</span> }
+                @if (u.id === me()?.id) {
+                  <span class="you">(you)</span>
+                }
               </td>
             </tr>
           } @empty {
-            <tr><td colspan="4">No users.</td></tr>
+            <tr>
+              <td colspan="4">No users.</td>
+            </tr>
           }
         </tbody>
       </table>
       <nav aria-label="Pagination">
         <button (click)="go(page() - 1)" [disabled]="page() <= 1">Previous</button>
         <span>Page {{ page() }} of {{ meta()?.total_pages || 1 }}</span>
-        <button (click)="go(page() + 1)" [disabled]="page() >= (meta()?.total_pages ?? 1)">Next</button>
+        <button (click)="go(page() + 1)" [disabled]="page() >= (meta()?.total_pages ?? 1)">
+          Next
+        </button>
       </nav>
     }
   `,
@@ -84,7 +106,11 @@ export class UsersPage {
 
   async changeRole(user: User, role: Role): Promise<void> {
     if (role === user.role) return;
-    if (user.id === this.me()?.id && role === 'member' && !confirm('Remove your own admin access? You will lose access to this page.')) {
+    if (
+      user.id === this.me()?.id &&
+      role === 'member' &&
+      !confirm('Remove your own admin access? You will lose access to this page.')
+    ) {
       this.users.update((list) => [...list]); // re-render the select back to its old value
       return;
     }

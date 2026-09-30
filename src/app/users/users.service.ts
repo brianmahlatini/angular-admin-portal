@@ -10,7 +10,9 @@ export class UsersService {
 
   list(page: number, perPage = 20): Observable<{ data: User[]; meta: PageMeta }> {
     const params = new HttpParams().set('page', page).set('per_page', perPage);
-    return this.http.get<{ data: User[]; meta: PageMeta }>(`${this.base}/api/admin/users`, { params });
+    return this.http.get<{ data: User[]; meta: PageMeta }>(`${this.base}/api/admin/users`, {
+      params,
+    });
   }
 
   setRole(id: number, role: Role): Observable<{ user: User }> {

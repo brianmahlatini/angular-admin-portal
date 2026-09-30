@@ -13,13 +13,15 @@ import { AuthService } from '../core/auth.service';
       @if (error()) {
         <p role="alert" class="error">{{ error() }}</p>
       }
-      <label>Email
+      <label
+        >Email
         <input type="email" formControlName="email" autocomplete="email" />
         @if (form.controls.email.touched && form.controls.email.invalid) {
           <span class="field-error">Enter a valid email address.</span>
         }
       </label>
-      <label>Password
+      <label
+        >Password
         <input type="password" formControlName="password" autocomplete="current-password" />
         @if (form.controls.password.touched && form.controls.password.invalid) {
           <span class="field-error">Password is required.</span>

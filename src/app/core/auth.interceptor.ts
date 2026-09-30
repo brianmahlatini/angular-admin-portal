@@ -13,11 +13,17 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const base = inject(API_BASE_URL);
   const ours = req.url.startsWith(`${base}/`);
   const token = auth.token();
-  const authed = ours && token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+  const authed =
+    ours && token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
   return next(authed).pipe(
     catchError((err: unknown) => {
-      if (ours && err instanceof HttpErrorResponse && err.status === 401 && !req.url.endsWith('/api/auth/login')) {
+      if (
+        ours &&
+        err instanceof HttpErrorResponse &&
+        err.status === 401 &&
+        !req.url.endsWith('/api/auth/login')
+      ) {
         auth.logout();
       }
       return throwError(() => err);

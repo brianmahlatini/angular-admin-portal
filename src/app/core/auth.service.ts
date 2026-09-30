@@ -24,7 +24,9 @@ export class AuthService {
   readonly token = computed(() => this.session()?.token ?? null);
 
   async login(email: string, password: string): Promise<void> {
-    const res = await firstValueFrom(this.http.post<Session>(`${this.base}/api/auth/login`, { email, password }));
+    const res = await firstValueFrom(
+      this.http.post<Session>(`${this.base}/api/auth/login`, { email, password }),
+    );
     this.set(res);
   }
 

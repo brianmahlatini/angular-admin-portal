@@ -6,8 +6,20 @@ import { API_BASE_URL, User } from '../core/api';
 import { UsersPage } from './users.page';
 
 const users: User[] = [
-  { id: 1, email: 'admin@example.test', name: 'Admin', role: 'admin', created_at: '2026-01-02T00:00:00Z' },
-  { id: 2, email: 'bob@example.test', name: 'Bob', role: 'member', created_at: '2026-01-03T00:00:00Z' },
+  {
+    id: 1,
+    email: 'admin@example.test',
+    name: 'Admin',
+    role: 'admin',
+    created_at: '2026-01-02T00:00:00Z',
+  },
+  {
+    id: 2,
+    email: 'bob@example.test',
+    name: 'Bob',
+    role: 'member',
+    created_at: '2026-01-03T00:00:00Z',
+  },
 ];
 
 describe('UsersPage', () => {
@@ -17,11 +29,18 @@ describe('UsersPage', () => {
     sessionStorage.setItem('admin-portal.session', JSON.stringify({ token: 't', user: users[0] }));
     TestBed.configureTestingModule({
       imports: [UsersPage],
-      providers: [provideRouter([]), provideHttpClient(), provideHttpClientTesting(), { provide: API_BASE_URL, useValue: 'http://api.test' }],
+      providers: [
+        provideRouter([]),
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: API_BASE_URL, useValue: 'http://api.test' },
+      ],
     });
     ctrl = TestBed.inject(HttpTestingController);
     const fixture = TestBed.createComponent(UsersPage);
-    ctrl.expectOne('http://api.test/api/admin/users?page=1&per_page=20').flush({ data: users, meta: { page: 1, per_page: 20, total: 2, total_pages: 1 } });
+    ctrl
+      .expectOne('http://api.test/api/admin/users?page=1&per_page=20')
+      .flush({ data: users, meta: { page: 1, per_page: 20, total: 2, total_pages: 1 } });
     await fixture.whenStable();
     return fixture;
   }
@@ -53,14 +72,18 @@ describe('UsersPage', () => {
     const fixture = await setup();
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     const p = fixture.componentInstance.changeRole(users[0]!, 'member');
-    ctrl.expectOne('http://api.test/api/admin/users/1').flush(
-      { title: 'Conflict', detail: 'Cannot demote the last remaining admin.' },
-      { status: 409, statusText: 'Conflict' },
-    );
+    ctrl
+      .expectOne('http://api.test/api/admin/users/1')
+      .flush(
+        { title: 'Conflict', detail: 'Cannot demote the last remaining admin.' },
+        { status: 409, statusText: 'Conflict' },
+      );
     await p;
     await fixture.whenStable();
     expect(fixture.componentInstance.users()[0]?.role).toBe('admin');
-    expect((fixture.nativeElement as HTMLElement).querySelector('[role=alert]')?.textContent).toContain('last remaining admin');
+    expect(
+      (fixture.nativeElement as HTMLElement).querySelector('[role=alert]')?.textContent,
+    ).toContain('last remaining admin');
   });
 
   it('does nothing if you cancel removing your own admin access', async () => {
