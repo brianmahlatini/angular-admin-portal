@@ -46,12 +46,10 @@ describe('LoginPage', () => {
       password: 'secret-password',
     });
     const p = fixture.componentInstance.submit();
-    ctrl
-      .expectOne('http://api.test/api/auth/login')
-      .flush({
-        token: 't',
-        user: { id: 1, email: 'admin@example.test', name: 'Admin', role: 'admin' },
-      });
+    ctrl.expectOne('http://api.test/api/auth/login').flush({
+      token: 't',
+      user: { id: 1, email: 'admin@example.test', name: 'Admin', role: 'admin' },
+    });
     await p;
     expect(navigate).toHaveBeenCalledWith(['/users']);
   });
@@ -63,12 +61,10 @@ describe('LoginPage', () => {
       password: 'secret-password',
     });
     const p = fixture.componentInstance.submit();
-    ctrl
-      .expectOne('http://api.test/api/auth/login')
-      .flush({
-        token: 't',
-        user: { id: 2, email: 'bob@example.test', name: 'Bob', role: 'member' },
-      });
+    ctrl.expectOne('http://api.test/api/auth/login').flush({
+      token: 't',
+      user: { id: 2, email: 'bob@example.test', name: 'Bob', role: 'member' },
+    });
     await p;
     expect(TestBed.inject(AuthService).user()).toBeNull();
     expect(fixture.componentInstance.error()).toBe('This portal is for administrators only.');
