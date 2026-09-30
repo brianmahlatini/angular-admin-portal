@@ -1,0 +1,10 @@
+<header>
+  <a routerLink="/users" class="brand">Admin portal</a>
+  @if (auth.user(); as user) {
+    <span>{{ user.name }} ({{ user.role }})</span>
+    <button type="button" (click)="auth.logout()">Sign out</button>
+  }
+</header>
+<main>
+  <router-outlet />
+</main>

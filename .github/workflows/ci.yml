@@ -1,0 +1,49 @@
+name: ci
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx prettier --check "src/**/*.{ts,html,css}"
+      - run: npm run test:ci
+      - run: npm audit --omit=dev --audit-level=high
+      - name: Point the production build at the API
+        if: vars.API_URL != ''
+        run: echo "export const environment = { apiUrl: '${{ vars.API_URL }}' };" > src/environments/environment.production.ts
+      - run: npx ng build --configuration production
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/angular-admin-portal/browser
+
+  # Azure Static Web Apps: global CDN, SPA fallback and security headers from
+  # public/staticwebapp.config.json. Runs only when the deployment token is set.
+  deploy:
+    needs: build
+    if: github.ref == 'refs/heads/main' && vars.AZURE_SWA_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist
+      - uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          action: upload
+          app_location: dist
+          skip_app_build: true
